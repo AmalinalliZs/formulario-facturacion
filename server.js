@@ -29,7 +29,7 @@ app.post('/submit-form', upload.fields([
 
   const mailOptions = {
     from: 'tu-email@gmail.com',
-    to: 'facturas@casacilantro.com.mx',
+    to: 'divinasuper9@gmail.com',
     subject: 'Nueva Solicitud de Facturación',
     text: `
       Constancia de situación fiscal: ${taxSituation}
