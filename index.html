@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Facturación</title>
+</head>
+<body>
+    <h2>Formulario de Facturación</h2>
+    <p>Solo se facturan tickets del mes en curso.<br>Si no se anexa forma de pago se facturará como compra en efectivo.</p>
+    <form action="https://formspree.io/f/mnqwkzvb" method="POST" enctype="multipart/form-data">
+        <label for="tax-situation">Constancia de situación fiscal:</label><br>
+        <input type="text" id="tax-situation" name="tax-situation" required><br><br>
+        
+        <label for="fiscal-regime">Régimen Fiscal:</label><br>
+        <input type="text" id="fiscal-regime" name="fiscal-regime" required><br><br>
+        
+        <label for="payment-method">Forma de pago:</label><br>
+        <input type="text" id="payment-method" name="payment-method" required><br><br>
+        
+        <label for="ticket-image">Imagen del Ticket de Consumo:</label><br>
+        <input type="file" id="ticket-image" name="ticket-image" accept="image/*" required><br><br>
+        
+        <label for="payment-proof">Imagen del ticket si pasó con tarjeta o transferencia:</label><br>
+        <input type="file" id="payment-proof" name="payment-proof" accept="image/*"><br><br>
+        
+        <input type="submit" value="Enviar">
+    </form>
+</body>
+</html>
