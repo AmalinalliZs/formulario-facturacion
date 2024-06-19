@@ -29,7 +29,7 @@
                 <input type="file" id="ticket-image" name="ticket-image" accept="image/*"><br><br>
                 
                 <label for="user-email">Correo Electrónico para enviar factura:</label><br>
-                <input type="email" id="user-email" name="user-email"><br><br>
+                <input type="email" id="user-email" name="user-email" required><br><br>
             </div>
             
             <div id="extra-fields-tarjeta-transferencia" style="display: none;">
@@ -40,7 +40,7 @@
                 <input type="file" id="payment-proof" name="payment-proof" accept="image/*"><br><br>
                 
                 <label for="user-email-tarjeta-transferencia">Correo Electrónico para enviar factura:</label><br>
-                <input type="email" id="user-email-tarjeta-transferencia" name="user-email"><br><br>
+                <input type="email" id="user-email-tarjeta-transferencia" name="user-email" required><br><br>
             </div>
             
             <input type="submit" value="Enviar">
@@ -57,9 +57,11 @@
 
         document.getElementById('facturacion-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const formData = new FormData(e.target);
 
-            fetch(e.target.action, {
+            const form = e.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -68,20 +70,16 @@
             }).then(response => {
                 if (response.ok) {
                     alert('Formulario enviado correctamente.');
+                    form.reset();
                     document.getElementById('error-message').style.display = 'none';
-                    e.target.reset();
                 } else {
                     response.json().then(data => {
-                        if (Object.hasOwn(data, 'errors')) {
-                            document.getElementById('error-message').textContent = data["errors"].map(error => error["message"]).join(", ");
-                        } else {
-                            document.getElementById('error-message').textContent = "Error al enviar el formulario.";
-                        }
+                        document.getElementById('error-message').textContent = 'Error al enviar el formulario.';
                         document.getElementById('error-message').style.display = 'block';
                     });
                 }
             }).catch(error => {
-                document.getElementById('error-message').textContent = "Error al enviar el formulario.";
+                document.getElementById('error-message').textContent = 'Error al enviar el formulario.';
                 document.getElementById('error-message').style.display = 'block';
             });
         });
