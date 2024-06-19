@@ -1,70 +1,70 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $to = 'divinasuper9@gmail.com';
-    $subject = 'Nueva Solicitud de Facturación';
+    $mail = new PHPMailer(true);
 
-    $fiscalRegime = $_POST['fiscal-regime'];
-    $paymentMethod = $_POST['payment-method'];
-    $userEmail = '';
+    try {
+        // Configuración del servidor SMTP para Gmail
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'divinasuper9@gmail.com'; // Tu dirección de correo de Gmail
+        $mail->Password = 'gzsj vhew vqbv cnmx'; // Tu contraseña de aplicación de Gmail
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
 
-    $message = "Régimen Fiscal: $fiscalRegime\n";
-    $message .= "Forma de pago: $paymentMethod\n";
+        // Destinatarios
+        $mail->setFrom('divinasuper9@gmail.com', 'Facturación');
+        $mail->addAddress('divinasuper9@gmail.com');
 
-    $headers = "From: $userEmail";
-
-    // Manejo de archivos adjuntos
-    $attachments = [];
-    if (isset($_FILES['tax-situation']) && $_FILES['tax-situation']['error'] == UPLOAD_ERR_OK) {
-        $attachments[] = $_FILES['tax-situation'];
-    }
-    if ($paymentMethod == 'efectivo') {
-        $userEmail = $_POST['user-email'];
-        $message .= "Correo Electrónico para enviar factura: $userEmail\n";
+        // Archivos adjuntos
+        if (isset($_FILES['tax-situation']) && $_FILES['tax-situation']['error'] == UPLOAD_ERR_OK) {
+            $mail->addAttachment($_FILES['tax-situation']['tmp_name'], $_FILES['tax-situation']['name']);
+        }
         if (isset($_FILES['ticket-image']) && $_FILES['ticket-image']['error'] == UPLOAD_ERR_OK) {
-            $attachments[] = $_FILES['ticket-image'];
+            $mail->addAttachment($_FILES['ticket-image']['tmp_name'], $_FILES['ticket-image']['name']);
         }
-    } elseif ($paymentMethod == 'tarjeta') {
-        $userEmail = $_POST['user-email-tarjeta'];
-        $cardType = $_POST['card-type'];
-        $message .= "Tipo de Tarjeta: $cardType\n";
-        $message .= "Correo Electrónico para enviar factura: $userEmail\n";
         if (isset($_FILES['voucher-image']) && $_FILES['voucher-image']['error'] == UPLOAD_ERR_OK) {
-            $attachments[] = $_FILES['voucher-image'];
+            $mail->addAttachment($_FILES['voucher-image']['tmp_name'], $_FILES['voucher-image']['name']);
         }
-    } elseif ($paymentMethod == 'transferencia') {
-        $userEmail = $_POST['user-email-transferencia'];
-        $message .= "Correo Electrónico para enviar factura: $userEmail\n";
         if (isset($_FILES['transfer-image']) && $_FILES['transfer-image']['error'] == UPLOAD_ERR_OK) {
-            $attachments[] = $_FILES['transfer-image'];
+            $mail->addAttachment($_FILES['transfer-image']['tmp_name'], $_FILES['transfer-image']['name']);
         }
-    }
 
-    $boundary = md5(time());
+        // Contenido del correo
+        $fiscalRegime = $_POST['fiscal-regime'];
+        $paymentMethod = $_POST['payment-method'];
+        $userEmail = '';
 
-    $headers .= "\r\nMIME-Version: 1.0\r\n" .
-        "Content-Type: multipart/mixed; boundary=\"{$boundary}\"";
+        $message = "Régimen Fiscal: $fiscalRegime\n";
+        $message .= "Forma de pago: $paymentMethod\n";
 
-    $body = "--{$boundary}\r\n" .
-        "Content-Type: text/plain; charset=\"utf-8\"\r\n" .
-        "Content-Transfer-Encoding: 7bit\r\n\r\n" .
-        $message . "\r\n";
+        if ($paymentMethod == 'efectivo') {
+            $userEmail = $_POST['user-email'];
+            $message .= "Correo Electrónico para enviar factura: $userEmail\n";
+        } elseif ($paymentMethod == 'tarjeta') {
+            $userEmail = $_POST['user-email-tarjeta'];
+            $cardType = $_POST['card-type'];
+            $message .= "Tipo de Tarjeta: $cardType\n";
+            $message .= "Correo Electrónico para enviar factura: $userEmail\n";
+        } elseif ($paymentMethod == 'transferencia') {
+            $userEmail = $_POST['user-email-transferencia'];
+            $message .= "Correo Electrónico para enviar factura: $userEmail\n";
+        }
 
-    foreach ($attachments as $attachment) {
-        $body .= "--{$boundary}\r\n";
-        $body .= "Content-Type: " . $attachment['type'] . "; name=\"" . basename($attachment['name']) . "\"\r\n";
-        $body .= "Content-Transfer-Encoding: base64\r\n";
-        $body .= "Content-Disposition: attachment; filename=\"" . basename($attachment['name']) . "\"\r\n\r\n";
-        $body .= chunk_split(base64_encode(file_get_contents($attachment['tmp_name']))) . "\r\n";
-    }
+        $mail->isHTML(false);
+        $mail->Subject = 'Nueva Solicitud de Facturación';
+        $mail->Body    = $message;
 
-    $body .= "--{$boundary}--";
-
-    if (mail($to, $subject, $body, $headers)) {
+        $mail->send();
         echo 'Formulario enviado correctamente.';
-    } else {
-        echo 'Error al enviar el formulario.';
+    } catch (Exception $e) {
+        echo "Error al enviar el formulario: {$mail->ErrorInfo}";
     }
 } else {
     echo 'Método no permitido.';
 }
-?>

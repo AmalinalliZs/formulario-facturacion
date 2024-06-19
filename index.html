@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h2>Formulario de Facturación</h2>
-        <form action="send_mail.php" method="POST" enctype="multipart/form-data">
+        <form id="facturacion-form" action="send_mail.php" method="POST" enctype="multipart/form-data">
             <label for="tax-situation">Constancia de situación fiscal:</label><br>
             <input type="file" id="tax-situation" name="tax-situation" accept=".pdf,.jpg,.jpeg,.png" required><br><br>
 
@@ -29,19 +29,19 @@
                 <input type="file" id="ticket-image" name="ticket-image" accept="image/*"><br><br>
 
                 <label for="user-email">Correo Electrónico para enviar factura:</label><br>
-                <input type="email" id="user-email" name="user-email" required><br><br>
+                <input type="email" id="user-email" name="user-email"><br><br>
             </div>
 
             <div id="extra-fields-tarjeta" style="display: none;">
                 <label for="card-type">Tipo de Tarjeta:</label><br>
-                <input type="radio" id="debit-card" name="card-type" value="debito" required> Tarjeta de Débito<br>
-                <input type="radio" id="credit-card" name="card-type" value="credito" required> Tarjeta de Crédito<br><br>
+                <input type="radio" id="debit-card" name="card-type" value="debito"> Tarjeta de Débito<br>
+                <input type="radio" id="credit-card" name="card-type" value="credito"> Tarjeta de Crédito<br><br>
 
                 <label for="voucher-image">Foto del Baucher:</label><br>
                 <input type="file" id="voucher-image" name="voucher-image" accept="image/*"><br><br>
 
                 <label for="user-email-tarjeta">Correo Electrónico para enviar factura:</label><br>
-                <input type="email" id="user-email-tarjeta" name="user-email-tarjeta" required><br><br>
+                <input type="email" id="user-email-tarjeta" name="user-email-tarjeta"><br><br>
             </div>
 
             <div id="extra-fields-transferencia" style="display: none;">
@@ -49,7 +49,7 @@
                 <input type="file" id="transfer-image" name="transfer-image" accept="image/*"><br><br>
 
                 <label for="user-email-transferencia">Correo Electrónico para enviar factura:</label><br>
-                <input type="email" id="user-email-transferencia" name="user-email-transferencia" required><br><br>
+                <input type="email" id="user-email-transferencia" name="user-email-transferencia"><br><br>
             </div>
 
             <input type="submit" value="Enviar">
@@ -62,6 +62,21 @@
             document.getElementById('extra-fields-efectivo').style.display = paymentMethod === 'efectivo' ? 'block' : 'none';
             document.getElementById('extra-fields-tarjeta').style.display = paymentMethod === 'tarjeta' ? 'block' : 'none';
             document.getElementById('extra-fields-transferencia').style.display = paymentMethod === 'transferencia' ? 'block' : 'none';
+
+            document.getElementById('user-email').required = paymentMethod === 'efectivo';
+            document.getElementById('user-email-tarjeta').required = paymentMethod === 'tarjeta';
+            document.getElementById('user-email-transferencia').required = paymentMethod === 'transferencia';
+        });
+
+        document.getElementById('facturacion-form').addEventListener('submit', function (event) {
+            var paymentMethod = document.getElementById('payment-method').value;
+            if (paymentMethod === 'tarjeta') {
+                var cardTypeSelected = document.querySelector('input[name="card-type"]:checked');
+                if (!cardTypeSelected) {
+                    alert('Por favor, seleccione el tipo de tarjeta.');
+                    event.preventDefault();
+                }
+            }
         });
     </script>
 </body>

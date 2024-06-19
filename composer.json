@@ -1,0 +1,16 @@
+{
+    "name": "cintia/formulario-facturacion",
+    "description": "Formulario de facturación para enviar datos y archivos adjuntos por correo.",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cintia",
+            "email": "divinasuper9@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
