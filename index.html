@@ -11,47 +11,57 @@
         <h2>Formulario de Facturación</h2>
         <form action="send_mail.php" method="POST" enctype="multipart/form-data">
             <label for="tax-situation">Constancia de situación fiscal:</label><br>
-            <input type="text" id="tax-situation" name="tax-situation" required><br><br>
-            
+            <input type="file" id="tax-situation" name="tax-situation" accept=".pdf,.jpg,.jpeg,.png" required><br><br>
+
             <label for="fiscal-regime">Régimen Fiscal:</label><br>
             <input type="text" id="fiscal-regime" name="fiscal-regime" required><br><br>
-            
+
             <label for="payment-method">Forma de pago:</label><br>
             <select id="payment-method" name="payment-method" required>
                 <option value="">Seleccione una opción</option>
                 <option value="efectivo">Efectivo</option>
                 <option value="tarjeta">Tarjeta</option>
-                <option value="transferencia">Transferencia</option>
+                <option value="transferencia">Transferencia Bancaria</option>
             </select><br><br>
-            
+
             <div id="extra-fields-efectivo" style="display: none;">
-                <label for="ticket-image">Imagen del Ticket de Consumo:</label><br>
+                <label for="ticket-image">Foto del Ticket de Compra:</label><br>
                 <input type="file" id="ticket-image" name="ticket-image" accept="image/*"><br><br>
-                
+
                 <label for="user-email">Correo Electrónico para enviar factura:</label><br>
                 <input type="email" id="user-email" name="user-email" required><br><br>
             </div>
-            
-            <div id="extra-fields-tarjeta-transferencia" style="display: none;">
-                <label for="ticket-image-tarjeta-transferencia">Imagen del Ticket de Consumo:</label><br>
-                <input type="file" id="ticket-image-tarjeta-transferencia" name="ticket-image-tarjeta-transferencia" accept="image/*"><br><br>
-                
-                <label for="payment-proof">Imagen del ticket si pasó con tarjeta o transferencia:</label><br>
-                <input type="file" id="payment-proof" name="payment-proof" accept="image/*"><br><br>
-                
-                <label for="user-email-tarjeta-transferencia">Correo Electrónico para enviar factura:</label><br>
-                <input type="email" id="user-email-tarjeta-transferencia" name="user-email-tarjeta-transferencia" required><br><br>
+
+            <div id="extra-fields-tarjeta" style="display: none;">
+                <label for="card-type">Tipo de Tarjeta:</label><br>
+                <input type="radio" id="debit-card" name="card-type" value="debito" required> Tarjeta de Débito<br>
+                <input type="radio" id="credit-card" name="card-type" value="credito" required> Tarjeta de Crédito<br><br>
+
+                <label for="voucher-image">Foto del Baucher:</label><br>
+                <input type="file" id="voucher-image" name="voucher-image" accept="image/*"><br><br>
+
+                <label for="user-email-tarjeta">Correo Electrónico para enviar factura:</label><br>
+                <input type="email" id="user-email-tarjeta" name="user-email-tarjeta" required><br><br>
             </div>
-            
+
+            <div id="extra-fields-transferencia" style="display: none;">
+                <label for="transfer-image">Captura de Transferencia:</label><br>
+                <input type="file" id="transfer-image" name="transfer-image" accept="image/*"><br><br>
+
+                <label for="user-email-transferencia">Correo Electrónico para enviar factura:</label><br>
+                <input type="email" id="user-email-transferencia" name="user-email-transferencia" required><br><br>
+            </div>
+
             <input type="submit" value="Enviar">
         </form>
     </div>
 
     <script>
-        document.getElementById('payment-method').addEventListener('change', function() {
+        document.getElementById('payment-method').addEventListener('change', function () {
             var paymentMethod = this.value;
             document.getElementById('extra-fields-efectivo').style.display = paymentMethod === 'efectivo' ? 'block' : 'none';
-            document.getElementById('extra-fields-tarjeta-transferencia').style.display = (paymentMethod === 'tarjeta' || paymentMethod === 'transferencia') ? 'block' : 'none';
+            document.getElementById('extra-fields-tarjeta').style.display = paymentMethod === 'tarjeta' ? 'block' : 'none';
+            document.getElementById('extra-fields-transferencia').style.display = paymentMethod === 'transferencia' ? 'block' : 'none';
         });
     </script>
 </body>

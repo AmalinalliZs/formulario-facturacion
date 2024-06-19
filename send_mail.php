@@ -3,40 +3,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $to = 'divinasuper9@gmail.com';
     $subject = 'Nueva Solicitud de Facturación';
 
-    // Datos del formulario
-    $taxSituation = $_POST['tax-situation'];
     $fiscalRegime = $_POST['fiscal-regime'];
     $paymentMethod = $_POST['payment-method'];
-    $userEmail = isset($_POST['user-email']) ? $_POST['user-email'] : $_POST['user-email-tarjeta-transferencia'];
+    $userEmail = '';
 
-    $message = "Constancia de situación fiscal: $taxSituation\n";
-    $message .= "Régimen Fiscal: $fiscalRegime\n";
+    $message = "Régimen Fiscal: $fiscalRegime\n";
     $message .= "Forma de pago: $paymentMethod\n";
-    $message .= "Correo Electrónico para enviar factura: $userEmail\n";
 
     $headers = "From: $userEmail";
 
     // Manejo de archivos adjuntos
     $attachments = [];
-    if (!empty($_FILES['ticket-image']['tmp_name'])) {
-        $attachments[] = $_FILES['ticket-image'];
+    if (isset($_FILES['tax-situation']) && $_FILES['tax-situation']['error'] == UPLOAD_ERR_OK) {
+        $attachments[] = $_FILES['tax-situation'];
     }
-    if (!empty($_FILES['ticket-image-tarjeta-transferencia']['tmp_name'])) {
-        $attachments[] = $_FILES['ticket-image-tarjeta-transferencia'];
-    }
-    if (!empty($_FILES['payment-proof']['tmp_name'])) {
-        $attachments[] = $_FILES['payment-proof'];
+    if ($paymentMethod == 'efectivo') {
+        $userEmail = $_POST['user-email'];
+        $message .= "Correo Electrónico para enviar factura: $userEmail\n";
+        if (isset($_FILES['ticket-image']) && $_FILES['ticket-image']['error'] == UPLOAD_ERR_OK) {
+            $attachments[] = $_FILES['ticket-image'];
+        }
+    } elseif ($paymentMethod == 'tarjeta') {
+        $userEmail = $_POST['user-email-tarjeta'];
+        $cardType = $_POST['card-type'];
+        $message .= "Tipo de Tarjeta: $cardType\n";
+        $message .= "Correo Electrónico para enviar factura: $userEmail\n";
+        if (isset($_FILES['voucher-image']) && $_FILES['voucher-image']['error'] == UPLOAD_ERR_OK) {
+            $attachments[] = $_FILES['voucher-image'];
+        }
+    } elseif ($paymentMethod == 'transferencia') {
+        $userEmail = $_POST['user-email-transferencia'];
+        $message .= "Correo Electrónico para enviar factura: $userEmail\n";
+        if (isset($_FILES['transfer-image']) && $_FILES['transfer-image']['error'] == UPLOAD_ERR_OK) {
+            $attachments[] = $_FILES['transfer-image'];
+        }
     }
 
     $boundary = md5(time());
 
     $headers .= "\r\nMIME-Version: 1.0\r\n" .
-                "Content-Type: multipart/mixed; boundary=\"{$boundary}\"";
+        "Content-Type: multipart/mixed; boundary=\"{$boundary}\"";
 
     $body = "--{$boundary}\r\n" .
-            "Content-Type: text/plain; charset=\"utf-8\"\r\n" .
-            "Content-Transfer-Encoding: 7bit\r\n\r\n" .
-            $message . "\r\n";
+        "Content-Type: text/plain; charset=\"utf-8\"\r\n" .
+        "Content-Transfer-Encoding: 7bit\r\n\r\n" .
+        $message . "\r\n";
 
     foreach ($attachments as $attachment) {
         $body .= "--{$boundary}\r\n";
